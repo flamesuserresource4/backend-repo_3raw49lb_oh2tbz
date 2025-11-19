@@ -12,7 +12,7 @@ Model name is converted to lowercase for the collection name:
 """
 
 from pydantic import BaseModel, Field, EmailStr
-from typing import Optional, List
+from typing import Optional, List, Literal
 
 # Example schemas (you can keep these for reference):
 
@@ -86,6 +86,32 @@ class Review(BaseModel):
     name: str = Field(..., description="Reviewer name")
     rating: int = Field(..., ge=1, le=5, description="Star rating 1-5")
     comment: Optional[str] = Field(None, description="Optional review comment")
+
+# ------------------------
+# Auth payload schemas
+# ------------------------
+
+Role = Literal["provider", "requester"]
+
+class RegisterInput(BaseModel):
+    name: str
+    email: EmailStr
+    password: str
+    role: Role
+
+class LoginInput(BaseModel):
+    email: EmailStr
+    password: str
+
+class AuthUser(BaseModel):
+    id: str
+    name: str
+    email: EmailStr
+    role: Role
+
+class AuthResponse(BaseModel):
+    token: str
+    user: AuthUser
 
 # Note: The Flames database viewer can read these schemas from GET /schema
 # No in-memory storage is used; MongoDB handles persistence.
